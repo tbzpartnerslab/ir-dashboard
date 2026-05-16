@@ -50,10 +50,6 @@ def load_data():
 
 df = load_data()
 
-# 모달리티 그룹 컬럼 추가
-df["모달리티_그룹"] = df["모달리티"].apply(get_modality_group)
-df["치료영역_그룹"] = df["치료영역"].apply(get_disease_group)
-
 
 # ============================================================
 # 치료영역 그룹핑 매핑 (우선순위 순서대로 검사)
@@ -329,6 +325,10 @@ def group_by_company(df):
         if any(v for v in pipeline.values()):
             groups[name]["pipelines"].append(pipeline)
     return groups
+
+# 모달리티/치료영역 그룹 컬럼 추가 (함수 정의 이후에 실행)
+df["모달리티_그룹"] = df["모달리티"].apply(get_modality_group)
+df["치료영역_그룹"] = df["치료영역"].apply(get_disease_group)
 
 # ============================================================
 # 스타일
