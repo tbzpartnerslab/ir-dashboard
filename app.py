@@ -488,11 +488,11 @@ with tab1:
         st.markdown("<br>", unsafe_allow_html=True)
 
         # 페이지당 50개씩 표시
-        page_size = 50
-        total_cos = len(filtered_companies)
+        page_size   = 50
+        total_cos   = len(company_groups)
         total_pages = max(1, (total_cos - 1) // page_size + 1)
         if total_pages > 1:
-            page = st.number_input("페이지", min_value=1, max_value=total_pages, value=1, step=1)
+            page  = st.number_input("페이지", min_value=1, max_value=total_pages, value=1, step=1)
             start = (page - 1) * page_size
             end   = start + page_size
             st.caption(f"{start+1}~{min(end, total_cos)} / 전체 {total_cos}개 기업")
