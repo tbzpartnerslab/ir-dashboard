@@ -22,30 +22,8 @@ def load_data():
     if not data_path.exists():
         st.error("data/ir_database.xlsx 파일이 없습니다.")
         st.stop()
-
-    # 필요한 컬럼만 로드해서 메모리 절약
-    needed_cols = [
-        "회사명", "국가", "설립연도", "기업단계", "임직원수",
-        "대표이사", "주요사업 한줄요약", "홈페이지",
-        "자본금", "누적 투자유치액", "현재 투자단계", "주요 투자사",
-        "치료영역", "모달리티", "세부 적응증", "핵심 타깃/MoA",
-        "리드에셋 코드명", "리드에셋 개발단계",
-        "잠재 파트너사 / 고객사",
-        "특허 등록 건수", "특허 출원 건수", "PCT 출원 여부",
-        "파일명", "파싱일자"
-    ]
-
-    # 실제 존재하는 컬럼만 선택
-    all_cols = pd.read_excel(data_path, nrows=0).columns.tolist()
-    use_cols  = [c for c in needed_cols if c in all_cols]
-
-    df = pd.read_excel(data_path, usecols=use_cols)
+    df = pd.read_excel(data_path)
     df = df.fillna("")
-
-    # 문자열 컬럼 메모리 최적화
-    for col in df.select_dtypes(include="object").columns:
-        df[col] = df[col].astype("string")
-
     return df
 
 df = load_data()
@@ -304,8 +282,7 @@ def get_modality_group(modality_str: str) -> str:
             return group
     return "기타"
 
-# 회사 단위로 그룹핑 (캐싱)
-@st.cache_data
+# 회사 단위로 그룹핑
 def group_by_company(df):
     groups = {}
     for _, row in df.iterrows():
