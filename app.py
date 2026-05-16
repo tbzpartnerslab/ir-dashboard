@@ -525,7 +525,15 @@ with tab1:
             if country:
                 badges_html += f'<span class="badge badge-gray">{country}</span>'
 
-            with st.expander(f"**{company_name}**　{badges_html}", expanded=False):
+            # expander 제목은 HTML 미지원 → 텍스트로 표시
+            stage_text   = f"[{stage_repr}]" if stage_repr else ""
+            area_text    = " · ".join(areas_list[:2])
+            mod_text     = " · ".join(modality_list[:1])
+            exp_title    = f"{company_name}  {stage_text}  {area_text}  {mod_text}"
+            with st.expander(exp_title, expanded=False):
+
+                # 배지 (expander 안에서는 HTML 사용 가능)
+                st.markdown(badges_html, unsafe_allow_html=True)
 
                 # 회사 요약
                 if summary:
