@@ -43,7 +43,7 @@ def load_data():
     df = df.fillna("")
 
     # 문자열 컬럼 메모리 최적화
-    for col in df.select_dtypes(include="object").columns:
+    for col in df.select_dtypes(include="str").columns:
         df[col] = df[col].astype("string")
 
     return df
@@ -487,7 +487,20 @@ with tab1:
         st.markdown(f"**{filtered_company_count}개 기업** 표시 중")
         st.markdown("<br>", unsafe_allow_html=True)
 
-        for company_name, data_dict in company_groups.items():
+        # 페이지당 50개씩 표시
+        page_size = 50
+        total_cos = len(filtered_companies)
+        total_pages = max(1, (total_cos - 1) // page_size + 1)
+        if total_pages > 1:
+            page = st.number_input("페이지", min_value=1, max_value=total_pages, value=1, step=1)
+            start = (page - 1) * page_size
+            end   = start + page_size
+            st.caption(f"{start+1}~{min(end, total_cos)} / 전체 {total_cos}개 기업")
+            page_companies = dict(list(company_groups.items())[start:end])
+        else:
+            page_companies = company_groups
+
+        for company_name, data_dict in page_companies.items():
             info      = data_dict["info"]
             pipelines = data_dict["pipelines"]
 
@@ -615,7 +628,7 @@ with tab2:
                          color_discrete_sequence=px.colors.qualitative.Set3, hole=0.4)
             fig.update_layout(margin=dict(t=10,b=10,l=10,r=10), height=340,
                               font_family="Noto Sans KR")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
     with c2:
         st.markdown("**모달리티 분포**")
@@ -626,7 +639,7 @@ with tab2:
                           color_discrete_sequence=["#2c5364"])
             fig2.update_layout(margin=dict(t=10,b=10,l=10,r=10), height=380,
                                font_family="Noto Sans KR", yaxis_title="", xaxis_title="파이프라인 수")
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
     st.markdown("**개발단계 분포**")
     stage_counts = filtered["리드에셋 개발단계"].value_counts().reset_index()
@@ -636,7 +649,7 @@ with tab2:
                       color_discrete_sequence=["#203a43"])
         fig3.update_layout(margin=dict(t=10,b=10,l=10,r=10), height=280,
                            font_family="Noto Sans KR", xaxis_title="", yaxis_title="기업 수")
-        st.plotly_chart(fig3, use_container_width=True)
+        st.plotly_chart(fig3, width='stretch')
 
 # ── 탭3: 전체 데이터 ────────────────────────────────────────
 with tab3:
@@ -647,7 +660,7 @@ with tab3:
         "누적 투자유치액", "주요 투자사", "파싱일자"
     ] if c in filtered.columns]
 
-    st.dataframe(filtered[show_cols], use_container_width=True, height=500)
+    st.dataframe(filtered[show_cols], width='stretch', height=500)
 
     csv = filtered.to_csv(index=False, encoding="utf-8-sig").encode("utf-8-sig")
-    st.download_button("⬇️ 현재 필터 결과 다운로드 (CSV)", csv, "ir_filtered.csv", "text/csv")
+    st.download_button("⬇️ 현재 필터 결과 다운로드 (CSV)", csv, "ir_filtered.csv", "text/csv", use_container_width=False)
