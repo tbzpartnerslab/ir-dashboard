@@ -384,10 +384,20 @@ with tab1:
                 if invest:    invest_html += f'<span class="ip-item"><span class="ip-label">투자유치</span>{invest}</span>'
                 if investors: invest_html += f'<span class="ip-item"><span class="ip-label">투자사</span>{investors[:30]}</span>'
 
-                with st.expander(f"**{cname}**　{stage}　{get_disease_group(area) if area else ''}　파이프라인 {len(pipes)}개", expanded=False):
-                    # 헤더 배지 + 요약
+                # ── 카드 행: 배지는 expander 밖 컬럼으로 표시 ──────
+                with st.expander(f"**{cname}**", expanded=False):
+                    # expander 안 상단에 배지 + 메타 + 요약
+                    dg_short = get_disease_group(area) if area else ""
+
+                    # 모달리티 그룹 뱃지
+                    mg_label = get_modality_group(modal) if modal else ""
+                    stage_badge = f'<span class="badge {stage_cls}">{stage}</span>' if stage else ""
+                    dg_badge    = f'<span class="badge badge-disease">{dg_short}</span>' if dg_short and dg_short != "기타" else ""
+                    mg_badge    = f'<span class="badge badge-modality">{mg_label}</span>' if mg_label and mg_label != "기타" else ""
+                    pipe_badge  = f'<span class="badge badge-tag">파이프라인 {len(pipes)}개</span>'
+
                     st.markdown(f"""
-                    <div style='margin-bottom:8px'>{badges}</div>
+                    <div style='margin-bottom:8px'>{mg_badge}{stage_badge}{dg_badge}{pipe_badge}</div>
                     <div class='company-meta'>{meta_str}</div>
                     {"<div class='company-summary'>"+summary+"</div>" if summary else ""}
                     """, unsafe_allow_html=True)
